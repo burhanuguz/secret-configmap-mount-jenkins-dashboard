@@ -377,12 +377,11 @@ pipeline {
 				}
 			}
 		}
-		stage('Delete Access Token') {
-			when {
-				expression { oauthToken != "" }
-			}
-			steps {
-				script {
+	}
+	post {
+		always {
+			script {
+				if ( oauthToken != "" ) {
 					sh ( script: "curl -k -X DELETE -H \"Authorization: Bearer ${oauthToken}\" \'${params.apiServer}/apis/oauth.openshift.io/v1/oauthaccesstokens/${oauthToken}\'" )
 				}
 			}
