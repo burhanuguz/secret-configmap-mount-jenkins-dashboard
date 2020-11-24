@@ -1,6 +1,6 @@
 def apiRequest(String apiReq, String method) {
 	if ( oauthToken == "" ) {
-		withCredentials([string(credentialsId: "${credID}", variable: 'TOKEN')]) {
+		withCredentials([string(credentialsId: "${params.credID}", variable: 'TOKEN')]) {
 			sh (
 				script: "curl ${insecure} -X ${method} -H \"Authorization: Bearer ${TOKEN}\" ${apiReq}",
 				returnStdout: true
@@ -38,7 +38,7 @@ pipeline {
 						request  = "apis/project.openshift.io/v1/projects"
 						if ( params.OpenshiftUser == true ) {
 							oauthUrl = readJSON text: sh( script: "curl ${params.apiServer}/.well-known/oauth-authorization-server", returnStdout: true )
-							withCredentials([usernamePassword(credentialsId: "${credID}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD', TOKEN: '')]) {
+							withCredentials([usernamePassword(credentialsId: "${params.credID}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD', TOKEN: '')]) {
 								oauthToken = sh ( script: "sh -c \'curl -u \"${USERNAME}:${PASSWORD}\" --head -H \"X-CSRF-Token: 1\" \"${oauthUrl.issuer}/oauth/authorize?client_id=openshift-challenging-client&response_type=token\" | grep -o \"token=.*&\" | cut -d \"&\" -f 1 | cut -d \"=\" -f 2\'", returnStdout: true ).trim()
 							}
 						}
